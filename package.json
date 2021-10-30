@@ -13,7 +13,8 @@
     "lint:php": "composer run lint",
     "lint": "yarn format:js && yarn lint:js && yarn format:php && yarn lint:php",
     "pre-commit:install": "husky install",
-    "pre-commit": "yarn lint && yarn test"
+    "pre-commit": "yarn lint && yarn test",
+    "dev": "composer install && yarn && yarn pre-commit:install"
   },
   "devDependencies": {
     "@wordpress/env": "^4.1.2",
