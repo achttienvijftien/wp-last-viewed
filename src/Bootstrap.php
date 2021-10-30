@@ -36,7 +36,9 @@ class Bootstrap {
 	 * Initialize plugin.
 	 */
 	public function init(): void {
-		add_action( 'admin_init', [ $this, 'init_admin' ] );
+		if ( is_admin() ) {
+			$this->init_admin();
+		}
 	}
 
 	/**

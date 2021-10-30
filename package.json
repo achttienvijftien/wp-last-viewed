@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "main": "./assets/js/index.js",
   "author": "1815",
+  "license": "GPL-3.0-or-later",
   "scripts": {
     "test:php:unit": "wp-env run phpunit \"phpunit -c /var/www/html/wp-content/plugins/wp-last-viewed/phpunit.xml.dist --verbose --testdox --testsuite unit\"",
     "test:js:unit": "wp-scripts test-unit-js",
@@ -13,7 +14,8 @@
     "lint:php": "composer run lint",
     "lint": "yarn format:js && yarn lint:js && yarn format:php && yarn lint:php",
     "pre-commit:install": "husky install",
-    "pre-commit": "yarn lint && yarn test"
+    "pre-commit": "yarn lint && yarn test",
+    "dev": "composer install && yarn && yarn pre-commit:install"
   },
   "devDependencies": {
     "@wordpress/env": "^4.1.2",
