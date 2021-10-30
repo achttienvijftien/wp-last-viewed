@@ -1,0 +1,31 @@
+{
+  "name": "wp-last-viewed",
+  "version": "0.1.0",
+  "main": "./assets/js/index.js",
+  "author": "1815",
+  "scripts": {
+    "test:php:unit": "wp-env run phpunit \"phpunit -c /var/www/html/wp-content/plugins/wp-last-viewed/phpunit.xml.dist --verbose --testdox --testsuite unit\"",
+    "test:js:unit": "wp-scripts test-unit-js",
+    "test": "yarn test:js:unit && yarn test:php:unit",
+    "format:js": "wp-scripts format",
+    "format:php": "composer run format",
+    "lint:js": "wp-scripts lint-js --fix",
+    "lint:php": "composer run lint",
+    "lint": "yarn format:js && yarn lint:js && yarn format:php && yarn lint:php",
+    "pre-commit:install": "husky install",
+    "pre-commit": "yarn lint && yarn test"
+  },
+  "devDependencies": {
+    "@wordpress/env": "^4.1.2",
+    "@wordpress/scripts": "^18.0.0",
+    "babel-jest": "^26.6.3",
+    "husky": "^7.0.4",
+    "jest": "^26.6.3",
+    "lint-staged": "^11.2.6"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  }
+}
