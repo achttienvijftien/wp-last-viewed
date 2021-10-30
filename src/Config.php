@@ -56,7 +56,7 @@ class Config {
 	 */
 	public function set( string $key, $value ): bool {
 		// add to options registry.
-		if ( ! update_option( self::OPTION_PREFIX . $key, $value, false ) ) {
+		if ( ! update_option( self::get_option_name( $key ), $value, false ) ) {
 			return false;
 		}
 
@@ -73,11 +73,22 @@ class Config {
 	 *
 	 * @return mixed
 	 */
-	public function get( string $key ) {
+	public function get( string $key ): mixed {
 		if ( ! isset( $this->options[ $key ] ) ) {
-			$this->options[ $key ] = get_option( self::OPTION_PREFIX . $key );
+			$this->options[ $key ] = get_option( self::get_option_name( $key ) );
 		}
 
 		return $this->options[ $key ];
+	}
+
+	/**
+	 * Returns prefixed option name.
+	 *
+	 * @param string $key Key of option.
+	 *
+	 * @return string
+	 */
+	public static function get_option_name( string $key ): string {
+		return self::OPTION_PREFIX . $key;
 	}
 }

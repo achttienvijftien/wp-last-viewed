@@ -75,4 +75,9 @@
     <rule ref="Generic.Arrays">
         <exclude name="Generic.Arrays.DisallowShortArraySyntax.Found" />
     </rule>
+
+    <!-- Allow precision alignment -->
+    <rule ref="WordPress.WhiteSpace">
+        <exclude name="WordPress.WhiteSpace.PrecisionAlignment.Found" />
+    </rule>
 </ruleset>

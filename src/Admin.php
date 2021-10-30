@@ -7,6 +7,8 @@
 
 namespace AchttienVijftien\Plugin\LastViewed;
 
+use AchttienVijftien\Plugin\LastViewed\Admin\Settings;
+
 /**
  * Admin only functionality.
  *
@@ -14,4 +16,10 @@ namespace AchttienVijftien\Plugin\LastViewed;
  */
 class Admin {
 
+	/**
+	 * Admin constructor.
+	 */
+	public function __construct() {
+		new Settings();
+	}
 }
