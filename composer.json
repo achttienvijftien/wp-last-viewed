@@ -1,0 +1,36 @@
+{
+    "name": "achttienvijftien/wp-last-viewed",
+    "description": "Show last viewed WordPress posts.",
+    "type": "wordpress-plugin",
+    "license": "GPL-3.0-or-later",
+    "autoload": {
+        "psr-4": {
+            "AchttienVijftien\\Plugin\\LastViewed\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "AchttienVijftien\\Plugin\\LastViewed\\Test\\": "tests/php/"
+        }
+    },
+    "authors": [
+        {
+            "name": "1815",
+            "email": "it@1815.nl"
+        }
+    ],
+    "require": {
+        "php": ">=7.4"
+    },
+    "require-dev": {
+        "wp-phpunit/wp-phpunit": "^5.8",
+        "squizlabs/php_codesniffer": "^3.6",
+        "dealerdirect/phpcodesniffer-composer-installer": "^0.7.1",
+        "phpcompatibility/phpcompatibility-wp": "^2.1",
+        "wp-coding-standards/wpcs": "^2.3"
+    },
+    "scripts": {
+        "format": "phpcbf --report-summary --report-source src",
+        "lint": "phpcs src"
+    }
+}
