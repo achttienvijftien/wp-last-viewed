@@ -32,6 +32,10 @@ class Settings {
 	public function __construct() {
 		add_action( 'admin_menu', [ $this, 'add_menu_page' ] );
 		add_action( 'admin_init', [ $this, 'add_settings' ] );
+		add_filter(
+			'plugin_action_links_wp-last-viewed/wp-last-viewed.php',
+			[ $this, 'plugin_settings_link' ]
+		);
 	}
 
 	/**
@@ -137,5 +141,28 @@ class Settings {
 		echo '<p class="description">';
 		esc_html_e( 'Default amount of last viewed posts to display.', 'wp-last-viewed' );
 		echo '</p>';
+	}
+
+	/**
+	 * Adds link to general settings page on plugin list page.
+	 *
+	 * @param array $links Links of this plugin to show on plugin list page.
+	 *
+	 * @return array
+	 */
+	public function plugin_settings_link( array $links ): array {
+		// Get link to general settings page.
+		$url = esc_url(
+			add_query_arg(
+				'page',
+				self::GENERAL_PAGE_SLUG,
+				get_admin_url() . 'admin.php'
+			)
+		);
+
+		// Create the link.
+		$links[] = '<a href="' . $url . '">' . esc_html__( 'Settings' ) . '</a>';
+
+		return $links;
 	}
 }
