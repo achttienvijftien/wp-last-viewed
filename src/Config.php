@@ -73,7 +73,7 @@ class Config {
 	 *
 	 * @return mixed
 	 */
-	public function get( string $key ): mixed {
+	public function get( string $key ) {
 		if ( ! isset( $this->options[ $key ] ) ) {
 			$this->options[ $key ] = get_option( self::get_option_name( $key ) );
 		}
