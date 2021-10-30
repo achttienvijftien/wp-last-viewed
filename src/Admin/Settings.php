@@ -136,7 +136,7 @@ class Settings {
 
 		echo '<input id="' . esc_attr( self::SETTINGS_PREFIX . 'amount' ) . '" class="small-text"
 		name="' . esc_attr( Config::get_option_name( 'amount' ) ) . '"
-		type="number" value="' . esc_attr( $amount ) . '" />';
+		type="number" min="1" max="20" value="' . esc_attr( $amount ) . '" />';
 
 		echo '<p class="description">';
 		esc_html_e( 'Default amount of last viewed posts to display.', 'wp-last-viewed' );
