@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "main": "./assets/js/index.js",
   "author": "1815",
+  "license": "GPL-3.0-or-later",
   "scripts": {
     "test:php:unit": "wp-env run phpunit \"phpunit -c /var/www/html/wp-content/plugins/wp-last-viewed/phpunit.xml.dist --verbose --testdox --testsuite unit\"",
     "test:js:unit": "wp-scripts test-unit-js",
