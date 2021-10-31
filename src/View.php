@@ -73,6 +73,7 @@ class View {
 		ob_start();
 
 		?>
+		<h3><?php echo __( 'Last viewed', 'wp-last-viewed' ); ?></h3>
 		<ul class="wp-last-viewed-list">
 			<?php foreach ( $posts as $post ) { ?>
 				<li class="wp-last-viewed-list__item"><a href="<?php echo get_the_permalink( $post ); ?>"><?php echo get_the_title( $post ); ?></a></li>
