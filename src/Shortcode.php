@@ -10,16 +10,11 @@ namespace AchttienVijftien\Plugin\LastViewed;
 use AchttienVijftien\Plugin\LastViewed\View;
 
 /**
- * Tracks page views on single posts.
+ * Make the shortcode.
  *
  * @package AchttienVijftien\Plugin\LastViewed
  */
 class Shortcode {
-
-	/**
-	 * Name of tracking cookie.
-	 */
-	public const TRACKING_COOKIE = '1815_last-viewed';
 
 	/**
 	 * Shortcode constructor.

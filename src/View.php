@@ -8,6 +8,7 @@
 namespace AchttienVijftien\Plugin\LastViewed;
 
 use AchttienVijftien\Plugin\LastViewed\Config;
+use AchttienVijftien\Plugin\LastViewed\Tracker;
 
 /**
  * Outputs the html
@@ -45,21 +46,17 @@ class View {
 	}
 
 	/**
-	 * Name of tracking cookie.
-	 */
-	public const TRACKING_COOKIE = '1815_last-viewed';
-
-	/**
 	 * Output posts found in the tracking cookie
 	 */
 	public function output_posts(): string {
+
 		// bail early if no or empty cookie
-		if ( empty( $_COOKIE[ self::TRACKING_COOKIE ] ) ) {
+		if ( empty( $_COOKIE[ Tracker::TRACKING_COOKIE ] ) ) {
 			return '';
 		}
 
 		// get post ids
-		$post_ids = explode( ',', $_COOKIE[ self::TRACKING_COOKIE ] );
+		$post_ids = explode( ',', $_COOKIE[ Tracker::TRACKING_COOKIE ] );
 
 		// get posts
 		$posts = get_posts( [
