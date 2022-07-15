@@ -7,6 +7,16 @@
 
 namespace AchttienVijftien\Plugin\LastViewed;
 
+require plugin_dir_path( __FILE__ ) . 'Tracker.php';
+require plugin_dir_path( __FILE__ ) . 'Admin.php';
+require plugin_dir_path( __FILE__ ) . 'Config.php';
+require plugin_dir_path( __FILE__ ) . 'View.php';
+require plugin_dir_path( __FILE__ ) . 'Shortcode.php';
+require plugin_dir_path( __FILE__ ) . 'WooCommerce.php';
+require plugin_dir_path( __FILE__ ) . 'Admin/Settings.php';
+
+use AchttienVijftien\Plugin;
+
 /**
  * Bootstrap plugin.
  */
@@ -36,6 +46,10 @@ class Bootstrap {
 	 * Initialize plugin.
 	 */
 	public function init(): void {
+		new Tracker();
+		new Shortcode();
+		new WooCommerce();
+
 		if ( is_admin() ) {
 			$this->init_admin();
 		}
