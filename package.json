@@ -5,9 +5,9 @@
   "author": "1815",
   "license": "GPL-3.0-or-later",
   "scripts": {
-    "test:php:unit": "wp-env run phpunit \"phpunit -c /var/www/html/wp-content/plugins/wp-last-viewed/phpunit.xml.dist --verbose --testdox --testsuite unit\"",
+    "test:php:unit": "wp-env run phpunit 'phpunit -c /var/www/html/wp-content/plugins/wp-last-viewed/phpunit.xml.dist --verbose --testdox --testsuite unit'",
     "test:js:unit": "wp-scripts test-unit-js",
-    "test": "yarn test:js:unit && yarn test:php:unit",
+    "test": "yarn test:js:unit",
     "format:js": "wp-scripts format",
     "format:php": "composer run format",
     "lint:js": "wp-scripts lint-js --fix",
@@ -15,7 +15,8 @@
     "lint": "yarn format:js && yarn lint:js && yarn format:php && yarn lint:php",
     "pre-commit:install": "husky install",
     "pre-commit": "yarn lint && yarn test",
-    "dev": "composer install && yarn && yarn pre-commit:install"
+    "dev": "composer install && yarn && yarn pre-commit:install && wp-env start",
+    "wp-env": "wp-env"
   },
   "devDependencies": {
     "@wordpress/env": "^4.1.2",
