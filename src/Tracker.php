@@ -32,8 +32,11 @@ class Tracker {
 	 * Page view track handler.
 	 */
 	public function track(): void {
-		// bail early if not on post single.
-		if ( ! is_singular( [ 'post' ] ) ) {
+		// get selected post types
+		$selected_post_type = Config::get_instance()->get( 'types' );
+
+		// bail early if not on one of selected posttypes.
+		if ( ! is_singular( $selected_post_type ) ) {
 			return;
 		}
 

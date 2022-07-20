@@ -55,12 +55,15 @@ class View {
 			return '';
 		}
 
+		// get selected post types
+		$selected_post_type = Config::get_instance()->get( 'types' );
+
 		// get post ids
 		$post_ids = explode( ',', $_COOKIE[ Tracker::TRACKING_COOKIE ] );
 
 		// get posts
 		$posts = get_posts( [
-			'post_type'      => 'post',
+			'post_type'      => $selected_post_type ,
 			'posts_per_page' => -1,
 			'post__in'       => $post_ids,
 			'orderby'        => 'post__in'

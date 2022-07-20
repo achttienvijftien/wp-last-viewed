@@ -88,6 +88,7 @@ class Settings {
 		);
 
 		$this->add_amount_setting();
+		$this->add_types_setting();
 	}
 
 	/**
@@ -140,6 +141,54 @@ class Settings {
 
 		echo '<p class="description">';
 		esc_html_e( 'Default amount of last viewed posts to display.', 'wp-last-viewed' );
+		echo '</p>';
+	}
+
+	/**
+	 * Post types setting.
+	 */
+	public function add_types_setting(): void {
+		register_setting(
+			self::SETTINGS_PREFIX . 'general',
+			Config::get_option_name( 'types' ),
+			[
+				'type'              => 'array',
+				'default'           => ['post'],
+			]
+		);
+
+		add_settings_field(
+			self::SETTINGS_PREFIX . 'types',
+			__( 'Post types', 'wp-last-viewed' ),
+			[
+				$this,
+				'types_setting_field',
+			],
+			self::GENERAL_PAGE_SLUG,
+			self::SETTINGS_PREFIX . 'general'
+		);
+	}
+
+	/**
+	 * Form field of default amount setting.
+	 */
+	public function types_setting_field(): void {
+		$types = Config::get_instance()->get( 'types' );
+
+		$types_args = array(
+			'public'  => true,
+		);
+
+		$registered_types = get_post_types($types_args, 'names', 'and');
+
+		foreach ($registered_types as $type_name) {
+			echo '<label style="display: block; margin-bottom: 2px;"><input id="' . esc_attr( self::SETTINGS_PREFIX . 'types' ) . '" class="select"
+			name="' . esc_attr( Config::get_option_name( 'types' ) ) . '[]"
+			type="checkbox" value="' . esc_attr( $type_name ) . '" /> '. esc_attr( $type_name ) .'</label>';
+		}
+		
+		echo '<p class="description">';
+		esc_html_e( 'Post types to include in tracking.', 'wp-last-viewed' );
 		echo '</p>';
 	}
 
