@@ -152,8 +152,8 @@ class Settings {
 			self::SETTINGS_PREFIX . 'general',
 			Config::get_option_name( 'types' ),
 			[
-				'type'              => 'array',
-				'default'           => ['post'],
+				'type'    => 'array',
+				'default' => [ 'post' ],
 			]
 		);
 
@@ -176,17 +176,21 @@ class Settings {
 		$types = Config::get_instance()->get( 'types' );
 
 		$types_args = array(
-			'public'  => true,
+			'public' => true,
 		);
 
-		$registered_types = get_post_types($types_args, 'names', 'and');
+		$registered_types = get_post_types( $types_args, 'names', 'and' );
 
-		foreach ($registered_types as $type_name) {
-			echo '<label style="display: block; margin-bottom: 2px;"><input id="' . esc_attr( self::SETTINGS_PREFIX . 'types' ) . '" class="select"
+		foreach ( $registered_types as $type_name ) {
+			$selected = (in_array($type_name, $types)) ? 'checked' : '';
+
+			echo '<label style="display: block; margin-bottom: 2px;">';
+			echo '<input id="' . esc_attr( self::SETTINGS_PREFIX . 'types' ) . '" class="select"
 			name="' . esc_attr( Config::get_option_name( 'types' ) ) . '[]"
-			type="checkbox" value="' . esc_attr( $type_name ) . '" /> '. esc_attr( $type_name ) .'</label>';
+			type="checkbox" '. $selected .' value="' . esc_attr( $type_name ) . '" /> ';
+			echo esc_attr( $type_name ) . '</label>';
 		}
-		
+
 		echo '<p class="description">';
 		esc_html_e( 'Post types to include in tracking.', 'wp-last-viewed' );
 		echo '</p>';
