@@ -36,8 +36,6 @@ class Settings {
 			'plugin_action_links_wp-last-viewed/wp-last-viewed.php',
 			[ $this, 'plugin_settings_link' ]
 		);
-
-		add_action('wp_ajax_set_cookie', [ $this, 'set_cookie' ]);
 	}
 
 	/**
@@ -228,20 +226,20 @@ class Settings {
 	 * Form field of default amount setting.
 	 */
 	public function tracking_setting_field(): void {
-		$tracking_type = Config::get_instance()->get( 'tracking_type' );
-		$server_side_active = ($tracking_type === 'server_side') ? 'checked' : '';
-		$client_side_active = ($tracking_type === 'client_side') ? 'checked' : '';
+		$tracking_type      = Config::get_instance()->get( 'tracking_type' );
+		$server_side_active = ( 'server_side' === $tracking_type ) ? 'checked' : '';
+		$client_side_active = ( 'client_side' === $tracking_type ) ? 'checked' : '';
 
 		echo '<label style="display: block; margin-bottom: 2px;">';
-		echo '<input id="' . esc_attr( self::SETTINGS_PREFIX . 'track' ) . '" class="select" name="' . esc_attr( Config::get_option_name( 'tracking_type' ) ) .'"
-		type="radio" '.  esc_attr( $server_side_active ) .' value="server_side" /> ';
+		echo '<input id="' . esc_attr( self::SETTINGS_PREFIX . 'track' ) . '" class="select" name="' . esc_attr( Config::get_option_name( 'tracking_type' ) ) . '"
+		type="radio" ' . esc_attr( $server_side_active ) . ' value="server_side" /> ';
 		echo 'Server side</label>';
 
 		echo '<label style="display: block; margin-bottom: 2px;">';
-		echo '<input id="' . esc_attr( self::SETTINGS_PREFIX . 'track' ) . '" class="select" name="' . esc_attr( Config::get_option_name( 'tracking_type' ) ) .'"
-		type="radio" '.  esc_attr( $client_side_active ) .' value="client_side" /> ';
+		echo '<input id="' . esc_attr( self::SETTINGS_PREFIX . 'track' ) . '" class="select" name="' . esc_attr( Config::get_option_name( 'tracking_type' ) ) . '"
+		type="radio" ' . esc_attr( $client_side_active ) . ' value="client_side" /> ';
 		echo 'Client side</label>';
-		
+
 		echo '<p class="description">';
 		esc_html_e( 'Type of tracking.', 'wp-last-viewed' );
 		echo '</p>';
@@ -269,16 +267,5 @@ class Settings {
 		$links[] = '<a href="' . $url . '">' . esc_html__( 'Settings' ) . '</a>';
 
 		return $links;
-	}
-
-	/**
-	 * Ajax method to set cookie
-	 * 
-	 */
-
-	public function set_cookie(): void {
-		$post_id = $_POST['post_id'];
-
-		$ajax_tracker = new Tracker();
 	}
 }

@@ -27,11 +27,11 @@ class Tracker {
 		$selected_tracking_type = Config::get_instance()->get( 'tracking_type' );
 
 		// Add track method or enqueue script / add meta tag based on tracking type.
-		if ($selected_tracking_type === 'server_side') {
+		if ( 'server_side' === $selected_tracking_type ) {
 			add_action( 'wp', [ $this, 'track' ] );
-		} else if ($selected_tracking_type === 'client_side') {
-			add_action('wp_enqueue_scripts', [ $this, 'enqueue_tracking_script' ]);
-			add_action('wp_head', [ $this, 'add_id_meta' ], 5);
+		} elseif ( 'client_side' === $selected_tracking_type ) {
+			add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_tracking_script' ] );
+			add_action( 'wp_head', [ $this, 'add_id_meta' ], 5 );
 		}
 	}
 
@@ -88,16 +88,16 @@ class Tracker {
 		$selected_post_type = Config::get_instance()->get( 'types' );
 
 		if ( is_singular( $selected_post_type ) ) {
-			wp_enqueue_script('tracking-js', plugin_dir_url(last_viewed_root) .'assets/js/tracking.js', array(), null, true);
+			wp_enqueue_script( 'tracking-js', plugin_dir_url( last_viewed_root ) . 'assets/js/tracking.js', [], '1.0.0', true );
 		}
 	}
 
 	/**
-	 * Add custom meta tag to wordpress HEAD.
+	 * Add custom meta tag to WordPress HEAD.
 	 */
 	public function add_id_meta() {
 		global $post;
-		
-		echo '<meta name="post_id" content="'. $post->ID .'" />';	
+
+		echo esc_attr( '<meta name="post_id" content="' . $post->ID . '" />' );
 	}
 }
