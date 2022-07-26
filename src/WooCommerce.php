@@ -29,7 +29,7 @@ class WooCommerce {
 	 */
 	public function output_posts(): void {
 
-		echo View::get_instance()->output_posts();
+		echo esc_attr( View::get_instance()->output_posts() );
 
 	}
 

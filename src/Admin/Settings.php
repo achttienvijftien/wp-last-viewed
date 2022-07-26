@@ -36,6 +36,8 @@ class Settings {
 			'plugin_action_links_wp-last-viewed/wp-last-viewed.php',
 			[ $this, 'plugin_settings_link' ]
 		);
+
+		add_action('wp_ajax_set_cookie', [ $this, 'set_cookie' ]);
 	}
 
 	/**
@@ -89,6 +91,7 @@ class Settings {
 
 		$this->add_amount_setting();
 		$this->add_types_setting();
+		$this->add_tracking_setting();
 	}
 
 	/**
@@ -175,19 +178,19 @@ class Settings {
 	public function types_setting_field(): void {
 		$types = Config::get_instance()->get( 'types' );
 
-		$types_args = array(
+		$types_args = [
 			'public' => true,
-		);
+		];
 
 		$registered_types = get_post_types( $types_args, 'names', 'and' );
 
 		foreach ( $registered_types as $type_name ) {
-			$selected = (in_array($type_name, $types)) ? 'checked' : '';
+			$selected = ( in_array( $type_name, $types ) ) ? 'checked' : '';
 
 			echo '<label style="display: block; margin-bottom: 2px;">';
 			echo '<input id="' . esc_attr( self::SETTINGS_PREFIX . 'types' ) . '" class="select"
 			name="' . esc_attr( Config::get_option_name( 'types' ) ) . '[]"
-			type="checkbox" '. $selected .' value="' . esc_attr( $type_name ) . '" /> ';
+			type="checkbox" ' . esc_attr( $selected ) . ' value="' . esc_attr( $type_name ) . '" /> ';
 			echo esc_attr( $type_name ) . '</label>';
 		}
 
@@ -195,6 +198,55 @@ class Settings {
 		esc_html_e( 'Post types to include in tracking.', 'wp-last-viewed' );
 		echo '</p>';
 	}
+
+	/**
+	 * Post types setting.
+	 */
+	public function add_tracking_setting(): void {
+		register_setting(
+			self::SETTINGS_PREFIX . 'general',
+			Config::get_option_name( 'tracking_type' ),
+			[
+				'type'    => 'string',
+				'default' => 'server_side',
+			]
+		);
+
+		add_settings_field(
+			self::SETTINGS_PREFIX . 'tracking_type',
+			__( 'Tracking type', 'wp-last-viewed' ),
+			[
+				$this,
+				'tracking_setting_field',
+			],
+			self::GENERAL_PAGE_SLUG,
+			self::SETTINGS_PREFIX . 'general'
+		);
+	}
+
+	/**
+	 * Form field of default amount setting.
+	 */
+	public function tracking_setting_field(): void {
+		$tracking_type = Config::get_instance()->get( 'tracking_type' );
+		$server_side_active = ($tracking_type === 'server_side') ? 'checked' : '';
+		$client_side_active = ($tracking_type === 'client_side') ? 'checked' : '';
+
+		echo '<label style="display: block; margin-bottom: 2px;">';
+		echo '<input id="' . esc_attr( self::SETTINGS_PREFIX . 'track' ) . '" class="select" name="' . esc_attr( Config::get_option_name( 'tracking_type' ) ) .'"
+		type="radio" '.  esc_attr( $server_side_active ) .' value="server_side" /> ';
+		echo 'Server side</label>';
+
+		echo '<label style="display: block; margin-bottom: 2px;">';
+		echo '<input id="' . esc_attr( self::SETTINGS_PREFIX . 'track' ) . '" class="select" name="' . esc_attr( Config::get_option_name( 'tracking_type' ) ) .'"
+		type="radio" '.  esc_attr( $client_side_active ) .' value="client_side" /> ';
+		echo 'Client side</label>';
+		
+		echo '<p class="description">';
+		esc_html_e( 'Type of tracking.', 'wp-last-viewed' );
+		echo '</p>';
+	}
+
 
 	/**
 	 * Adds link to general settings page on plugin list page.
@@ -217,5 +269,16 @@ class Settings {
 		$links[] = '<a href="' . $url . '">' . esc_html__( 'Settings' ) . '</a>';
 
 		return $links;
+	}
+
+	/**
+	 * Ajax method to set cookie
+	 * 
+	 */
+
+	public function set_cookie(): void {
+		$post_id = $_POST['post_id'];
+
+		$ajax_tracker = new Tracker();
 	}
 }

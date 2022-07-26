@@ -25,6 +25,7 @@ class Shortcode {
 
 	/**
 	 * Fire add shortcode
+	 *
 	 * @return void
 	 */
 	public function shortcode_init(): void {

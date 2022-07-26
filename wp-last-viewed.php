@@ -20,4 +20,8 @@ if ( file_exists( plugin_dir_path( __FILE__ ) . 'vendor/autoload.php' ) ) {
 	require plugin_dir_path( __FILE__ ) . 'vendor/autoload.php';
 }
 
+if ( ! defined( 'last_viewed_root' ) ) {
+    define( 'last_viewed_root', __FILE__ );
+}
+
 \AchttienVijftien\Plugin\LastViewed\Bootstrap::get_instance()->init();
