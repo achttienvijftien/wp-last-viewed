@@ -15,7 +15,6 @@ use AchttienVijftien\Plugin\LastViewed\Config;
  * @package AchttienVijftien\Plugin\LastViewed
  */
 class Tracker {
-
 	/**
 	 * Name of tracking cookie.
 	 */
@@ -25,15 +24,26 @@ class Tracker {
 	 * Tracker constructor.
 	 */
 	public function __construct() {
-		add_action( 'wp', [ $this, 'track' ] );
+		$selected_tracking_type = Config::get_instance()->get( 'tracking_type' );
+
+		// Add track method or enqueue script / add meta tag based on tracking type.
+		if ( 'server_side' === $selected_tracking_type ) {
+			add_action( 'wp', [ $this, 'track' ] );
+		} elseif ( 'client_side' === $selected_tracking_type ) {
+			add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_tracking_script' ] );
+			add_action( 'wp_head', [ $this, 'add_id_meta' ], 5 );
+		}
 	}
 
 	/**
 	 * Page view track handler.
 	 */
 	public function track(): void {
-		// bail early if not on post single.
-		if ( ! is_singular( [ 'post' ] ) ) {
+		// get selected post types.
+		$selected_post_type = Config::get_instance()->get( 'types' );
+
+		// bail early if not on one of selected posttypes.
+		if ( ! is_singular( $selected_post_type ) ) {
 			return;
 		}
 
@@ -69,5 +79,25 @@ class Tracker {
 			COOKIEPATH,
 			COOKIE_DOMAIN
 		);
+	}
+
+	/**
+	 * Enqueue script if current page is selected post-type.
+	 */
+	public function enqueue_tracking_script(): void {
+		$selected_post_type = Config::get_instance()->get( 'types' );
+
+		if ( is_singular( $selected_post_type ) ) {
+			wp_enqueue_script( 'tracking-js', plugin_dir_url( last_viewed_root ) . 'assets/js/tracking.js', [], '1.0.0', true );
+		}
+	}
+
+	/**
+	 * Add custom meta tag to WordPress HEAD.
+	 */
+	public function add_id_meta() {
+		global $post;
+
+		echo esc_attr( '<meta name="post_id" content="' . $post->ID . '" />' );
 	}
 }
