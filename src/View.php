@@ -59,12 +59,14 @@ class View {
 		$post_ids = explode( ',', $_COOKIE[ Tracker::TRACKING_COOKIE ] );
 
 		// get posts
-		$posts = get_posts( [
-			'post_type'      => 'post',
-			'posts_per_page' => -1,
-			'post__in'       => $post_ids,
-			'orderby'        => 'post__in'
-		] );
+		$posts = get_posts(
+			[
+				'post_type'      => 'post',
+				'posts_per_page' => -1,
+				'post__in'       => $post_ids,
+				'orderby'        => 'post__in',
+			]
+		);
 
 		if ( empty( $posts ) ) {
 			return '';
