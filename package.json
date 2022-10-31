@@ -16,11 +16,13 @@
     "pre-commit:install": "husky install",
     "pre-commit": "yarn lint && yarn test",
     "dev": "composer install && yarn && yarn pre-commit:install && wp-env start",
-    "wp-env": "wp-env"
+    "wp-env": "wp-env",
+    "build": "wp-scripts build --webpack-src-dir=./assets/js",
+    "start": "wp-scripts start --webpack-src-dir=./assets/js"
   },
   "devDependencies": {
     "@wordpress/env": "^4.1.2",
-    "@wordpress/scripts": "^18.0.0",
+    "@wordpress/scripts": "^24.4.0",
     "babel-jest": "^26.6.3",
     "husky": "^7.0.4",
     "jest": "^26.6.3",
