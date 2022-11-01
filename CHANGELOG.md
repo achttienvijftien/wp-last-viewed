@@ -7,4 +7,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Added editor block.
+
 [unreleased]: https://github.com/achttienvijftien/wp-republish
