@@ -1,5 +1,6 @@
 /vendor/
 /node_modules/
-
 yarn-error.log
 .phpunit.result.cache
+.idea
+/build/block/*.*.map

@@ -54,8 +54,11 @@ class Tracker {
 			// add to start of array.
 			array_unshift( $posts, get_the_ID() );
 
+			// get default amount from config.
+			$amount = Config::get_instance()->get( 'amount' ) ? Config::get_instance()->get( 'amount' ) : 20;
+
 			// array max size of 20 posts.
-			$posts = array_slice( $posts, 0, Config::get_instance()->get( 'amount' ) ? Config::get_instance()->get( 'amount' ) : 20 );
+			$posts = array_slice( $posts, 0, $amount );
 		} else {
 			// else set to post id.
 			$posts[] = get_the_ID();

@@ -11,4 +11,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Added editor block.
 
+### Changed
+
+- Updated plugin to 1815 Coding Standards.
+
 [unreleased]: https://github.com/achttienvijftien/wp-republish

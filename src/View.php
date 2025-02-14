@@ -15,8 +15,8 @@ use AchttienVijftien\Plugin\LastViewed\Tracker;
  *
  * @package AchttienVijftien\Plugin\LastViewed
  */
-
 class View {
+
 
 	/**
 	 * Config instance.
@@ -50,15 +50,15 @@ class View {
 	 */
 	public function output_posts(): string {
 
-		// bail early if no or empty cookie
+		// bail early if no or empty cookie.
 		if ( empty( $_COOKIE[ Tracker::TRACKING_COOKIE ] ) ) {
 			return '';
 		}
 
-		// get post ids
+		// get post ids.
 		$post_ids = explode( ',', $_COOKIE[ Tracker::TRACKING_COOKIE ] );
 
-		// get posts
+		// get posts.
 		$posts = get_posts(
 			[
 				'post_type'      => 'post',
@@ -75,10 +75,14 @@ class View {
 		ob_start();
 
 		?>
-		<h3><?php echo __( 'Last viewed', 'wp-last-viewed' ); ?></h3>
+		<h3><?php echo esc_html__( 'Last viewed', 'wp-last-viewed' ); ?></h3>
 		<ul class="wp-last-viewed-list">
 			<?php foreach ( $posts as $post ) { ?>
-				<li class="wp-last-viewed-list__item"><a href="<?php echo get_the_permalink( $post ); ?>"><?php echo get_the_title( $post ); ?></a></li>
+				<li class="wp-last-viewed-list__item">
+					<a href="<?php echo esc_url( get_the_permalink( $post ) ); ?>">
+						<?php echo esc_html( get_the_title( $post ) ); ?>
+					</a>
+				</li>
 			<?php } ?>
 		</ul>
 		<?php
@@ -87,6 +91,5 @@ class View {
 		ob_end_clean();
 
 		return $html;
-
 	}
 }
