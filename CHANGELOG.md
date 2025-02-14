@@ -10,9 +10,12 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - Added editor block.
+- Tracking side field in admin panel.
 
 ### Changed
 
 - Updated plugin to 1815 Coding Standards.
+- Improved sanitizing of settings field input.
+- Using WP standard methods instead for submit button.
 
 [unreleased]: https://github.com/achttienvijftien/wp-republish
