@@ -1,12 +1,4 @@
 {
 	"phpVersion": "7.4",
-	"plugins": [ "." ],
-	"docker-compose": {
-		"wordpress": {
-			"platform": "linux/amd64"
-		},
-		"phpunit": {
-			"platform": "linux/amd64"
-		}
-	}
+	"plugins": [ "." ]
 }
