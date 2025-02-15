@@ -24,7 +24,7 @@ class Shortcode {
 	}
 
 	/**
-	 * Fire add shortcode
+	 * Fire add shortcode.
 	 *
 	 * @return void
 	 */
@@ -33,10 +33,26 @@ class Shortcode {
 	}
 
 	/**
-	 * Output posts found in the tracking cookie
+	 * Output posts found in the tracking cookie.
+	 *
+	 * @param array $attributes list of attributes from shortcode.
 	 */
-	public function output_posts(): string {
+	public function output_posts( array $attributes ): string {
+		// get default amount from config.
+		$default_amount = Config::get_instance()->get( 'amount' );
 
-		return View::get_instance()->output_posts();
+		// fallback to default attributes.
+		$attributes = shortcode_atts(
+			[
+				'amount' => $default_amount,
+			],
+			$attributes,
+			'wp-last-viewed'
+		);
+
+		// get shortcode attributes.
+		$amount = $attributes['amount'];
+
+		return View::get_instance()->output_posts( $amount );
 	}
 }

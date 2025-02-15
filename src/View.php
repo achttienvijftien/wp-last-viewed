@@ -46,10 +46,12 @@ class View {
 
 	/**
 	 * Output posts found in the tracking cookie
+	 *
+	 * @param int $amount amount of posts to display.
 	 */
-	public function output_posts(): string {
-		// get default amount from config.
-		$amount = Config::get_instance()->get( 'amount' );
+	public function output_posts( ?int $amount = null ): string {
+		// get amount from param or fallback to config.
+		$amount = $amount ?: Config::get_instance()->get( 'amount' );
 
 		// get post types from config.
 		$post_types = Config::get_instance()->get( 'post_types' );

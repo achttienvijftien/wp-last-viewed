@@ -13,7 +13,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Tracking side field in admin panel.
 - Client-side tracking and rendering.
 - Tracked post types field in admin panel.
-- 
+- Chosen post types will be tracked.
 
 ### Changed
 
@@ -21,5 +21,6 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Improved sanitizing of settings field input.
 - Using WP standard methods instead for submit button.
 - Prevent server-side tracking when client-side tracking is enabled.
+- Updated Gutenberg block to support amount. 
 
 [unreleased]: https://github.com/achttienvijftien/wp-republish

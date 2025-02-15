@@ -29,6 +29,12 @@ class Block {
 			dirname( __DIR__ ) . '/build/block',
 			[
 				'render_callback' => [ $this, 'render_callback' ],
+				'attributes'      => [
+					'amount' => [
+						'type'    => 'number',
+						'default' => 20,
+					],
+				],
 			]
 		);
 	}
@@ -36,9 +42,16 @@ class Block {
 	/**
 	 * Renders the block.
 	 *
+	 * @param array $attributes list of attributes from block.
 	 * @return string
 	 */
-	public function render_callback() {
-		return View::get_instance()->output_posts();
+	public function render_callback( array $attributes ): string {
+		// get default amount from config.
+		$default_amount = Config::get_instance()->get( 'amount' );
+
+		// fallback to default when no attributes set.
+		$amount = isset( $attributes['amount'] ) ? intval( $attributes['amount'] ) : $default_amount;
+
+		return View::get_instance()->output_posts( $amount );
 	}
 }
