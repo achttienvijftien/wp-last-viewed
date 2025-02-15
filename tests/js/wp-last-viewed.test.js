@@ -12,6 +12,7 @@ describe( 'WordPress Last Viewed tests', () => {
 		tracker = new WPLastViewed( '.test-last-viewed-list', {
 			cookieName: 'test-last-viewed',
 			defaultAmount: 5,
+			postTypes: [ 'post', 'page' ],
 		} );
 
 		// Clear any existing cookies before tests
@@ -26,35 +27,51 @@ describe( 'WordPress Last Viewed tests', () => {
 	} );
 
 	test( 'should get post ID from body class', () => {
-		document.body.className = 'postid-123 single-post';
+		document.body.className = 'postid-123 post-template-default';
 		const postId = tracker.getPostIdFromBody();
 		expect( postId ).toBe( 123 );
 	} );
 
-	test( 'should get last viewed post IDs from cookie', () => {
-		document.cookie = 'test-last-viewed=1,2,3; path=/; SameSite=Lax';
-		const lastViewedIds = tracker.getLastViewedPostIds();
-		expect( lastViewedIds ).toEqual( [ 1, 2, 3 ] );
+	test( 'should get post type from body class', () => {
+		document.body.className = 'postid-123 attachment-template-default';
+		const postType = tracker.getPostTypeFromBody();
+		expect( postType ).toBe( 'attachment' );
+	} );
+
+	test( 'should get last viewed posts from cookie', () => {
+		document.cookie =
+			'test-last-viewed=1/post,2/post,3/page; path=/; SameSite=Lax';
+		const lastViewedPosts = tracker.getLastViewedPosts();
+		expect( lastViewedPosts ).toEqual( [
+			{ id: 1, type: 'post' },
+			{ id: 2, type: 'post' },
+			{ id: 3, type: 'page' },
+		] );
 	} );
 
 	test( 'should append post ID correctly', () => {
-		tracker.appendPostToCookie( 123 );
-		tracker.appendPostToCookie( 234 );
+		tracker.appendPostToCookie( 123, 'post' );
+		tracker.appendPostToCookie( 234, 'page' );
 		const cookie = decodeURIComponent( document.cookie );
-		expect( cookie ).toBe( 'test-last-viewed=234,123' );
+		expect( cookie ).toBe( 'test-last-viewed=234/page,123/post' );
 	} );
 
 	test( 'should move existing post ID to the front', () => {
-		document.cookie = 'test-last-viewed=123,456,789; path=/; SameSite=Lax';
-		tracker.appendPostToCookie( 456 );
+		document.cookie =
+			'test-last-viewed=123/post,456/post,789/page; path=/; SameSite=Lax';
+		tracker.appendPostToCookie( 456, 'post' );
 		const cookie = decodeURIComponent( document.cookie );
-		expect( cookie ).toBe( 'test-last-viewed=456,123,789' );
+		expect( cookie ).toBe( 'test-last-viewed=456/post,123/post,789/page' );
 	} );
 
 	test( 'should correctly get and set cookies', () => {
-		tracker.setCookie( [ 1, 2, 3 ] );
+		tracker.setCookie( [
+			{ id: 1, type: 'post' },
+			{ id: 2, type: 'page' },
+			{ id: 3, type: 'page' },
+		] );
 		const cookie = decodeURIComponent( document.cookie );
-		expect( cookie ).toBe( 'test-last-viewed=1,2,3' );
+		expect( cookie ).toBe( 'test-last-viewed=1/post,2/page,3/page' );
 	} );
 
 	test( 'should escape HTML strings', () => {
@@ -88,7 +105,7 @@ describe( 'WordPress Last Viewed tests', () => {
 			},
 		];
 
-		tracker.displayPosts( posts );
+		tracker.renderPosts( posts );
 
 		const listElement = document.querySelector( '.test-last-viewed-list' );
 		expect( listElement.children.length ).toBe( 2 );
@@ -133,7 +150,7 @@ describe( 'WordPress Last Viewed tests', () => {
 			},
 		];
 
-		tracker.displayPosts( posts );
+		tracker.renderPosts( posts );
 
 		const listElement = document.querySelector( '.test-last-viewed-list' );
 		expect( listElement.children.length ).toBe( 5 );
@@ -142,6 +159,8 @@ describe( 'WordPress Last Viewed tests', () => {
 	} );
 
 	test( 'should fetch and return posts in correct order', async () => {
+		tracker.postTypes = [ 'post' ];
+
 		// Mock the global fetch function
 		global.fetch = jest.fn( () =>
 			Promise.resolve( {
@@ -161,7 +180,10 @@ describe( 'WordPress Last Viewed tests', () => {
 			} )
 		);
 
-		const postIds = [ 1, 2 ];
+		const postIds = [
+			{ id: 1, type: 'post' },
+			{ id: 2, type: 'post' },
+		];
 
 		// test fetchPosts method
 		tracker.fetchPosts( postIds, ( posts ) => {

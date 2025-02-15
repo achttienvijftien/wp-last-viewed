@@ -34,8 +34,10 @@ class Tracker {
 	 * Page view track handler.
 	 */
 	public function track(): void {
+		$post_types = Config::get_instance()->get( 'post_types' );
+
 		// bail early if not on post single.
-		if ( ! is_singular( [ 'post' ] ) ) {
+		if ( ! is_singular( $post_types ) ) {
 			return;
 		}
 
@@ -47,6 +49,8 @@ class Tracker {
 			return;
 		}
 
+		$post_identifier = get_the_ID() . '/' . get_post_type();
+
 		$posts = [];
 		// check cookie.
 		if ( ! empty( $_COOKIE[ self::TRACKING_COOKIE ] ) ) {
@@ -54,7 +58,7 @@ class Tracker {
 			$posts = explode( ',', $_COOKIE[ self::TRACKING_COOKIE ] );
 
 			// check if post already in array.
-			$existing_post_key = array_search( (string) get_the_ID(), $posts, true );
+			$existing_post_key = array_search( $post_identifier, $posts, true );
 
 			if ( is_int( $existing_post_key ) ) {
 				// remove current position, so it is moved to the start.
@@ -62,10 +66,10 @@ class Tracker {
 			}
 
 			// add to start of array.
-			array_unshift( $posts, get_the_ID() );
+			array_unshift( $posts, $post_identifier );
 		} else {
 			// else set to post id.
-			$posts[] = get_the_ID();
+			$posts[] = $post_identifier;
 		}
 
 		// (re)set tracking cookie.
@@ -93,6 +97,9 @@ class Tracker {
 		// get the default amount.
 		$amount = Config::get_instance()->get( 'amount' );
 
+		// get tracked post types.
+		$post_types = Config::get_instance()->get( 'post_types' );
+
 		// get path of the js file.
 		$js_file = Bootstrap::get_instance()->get_plugin_assets_url( 'js/wp-last-viewed.js' );
 
@@ -108,6 +115,7 @@ class Tracker {
 				'cookieName'              => self::TRACKING_COOKIE,
 				'cookiePath'              => COOKIEPATH,
 				'cookieExpirationSeconds' => MONTH_IN_SECONDS,
+				'postTypes'               => $post_types,
 				'i18n'                    => [
 					'noPostsFound' => esc_html__( 'No posts found.', 'wp-last-viewed' ),
 				],
