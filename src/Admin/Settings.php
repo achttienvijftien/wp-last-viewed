@@ -98,6 +98,7 @@ class Settings {
 
 		$this->add_amount_setting();
 		$this->add_tracking_side_setting();
+		$this->add_post_types_setting();
 	}
 
 	/**
@@ -165,7 +166,33 @@ class Settings {
 	}
 
 	/**
-	 * Sanitize input of amount
+	 * Default (custom) post type setting.
+	 */
+	public function add_post_types_setting(): void {
+		register_setting(
+			self::SETTINGS_PREFIX . 'general',
+			Config::get_option_name( 'post_types' ),
+			[
+				'type'              => 'array',
+				'sanitize_callback' => [ $this, 'sanitize_post_types_setting' ],
+				'default'           => [ 'post' ],
+			]
+		);
+
+		add_settings_field(
+			self::SETTINGS_PREFIX . 'post_types',
+			__( 'Post Types', 'wp-last-viewed' ),
+			[
+				$this,
+				'tracking_post_types_field',
+			],
+			self::GENERAL_PAGE_SLUG,
+			self::SETTINGS_PREFIX . 'general'
+		);
+	}
+
+	/**
+	 * Sanitize input of amount.
 	 *
 	 * @param string $input Raw field value of amount.
 	 * @return int
@@ -182,7 +209,7 @@ class Settings {
 	}
 
 	/**
-	 * Sanitize tracking side input
+	 * Sanitize tracking side input.
 	 *
 	 * @param string $input Raw field value of tracking side.
 	 * @return string
@@ -200,6 +227,48 @@ class Settings {
 			return self::SETTING_TRACKING_SIDE_SERVER;
 		}
 		return $input;
+	}
+
+	/**
+	 * Sanitize post type input.
+	 *
+	 * @param ?array $input Raw field value of post type.
+	 */
+	public function sanitize_post_types_setting( ?array $input ): array {
+		$all_post_types = get_post_types( [ 'public' => true ], 'names' );
+
+		// Check if input is array.
+		if ( ! is_array( $input ) || empty( $input ) ) {
+			// Show error.
+			add_settings_error(
+				self::SETTINGS_PREFIX . 'general',
+				Config::get_option_name( 'post_types' ),
+				__( 'You must select at least one post type.', 'wp-last-viewed' ),
+				'error'
+			);
+
+			// Fallback to posts.
+			return [ 'post' ];
+		}
+
+		// Filter valid post types.
+		$sanitized_post_types = array_intersect( $input, $all_post_types );
+
+		// Check if there is anything left.
+		if ( empty( $sanitized_post_types ) ) {
+			// Show error.
+			add_settings_error(
+				self::SETTINGS_PREFIX . 'general',
+				Config::get_option_name( 'post_types' ),
+				__( 'You must select at least one post type.', 'wp-last-viewed' ),
+				'error'
+			);
+
+			// Fallback to posts.
+			return [ 'post' ];
+		}
+
+		return $sanitized_post_types;
 	}
 
 	/**
@@ -238,7 +307,28 @@ class Settings {
 			. ' />' . esc_html__( 'Client-side', 'wp-last-viewed' ) . '</label>';
 
 		echo '<p class="description">';
-		esc_html_e( 'Default side where visited posts will be tracked.', 'wp-last-viewed' );
+		esc_html_e( 'Side where visited posts will be tracked.', 'wp-last-viewed' );
+		echo '</p>';
+	}
+
+	/**
+	 * Form field of post types setting.
+	 */
+	public function tracking_post_types_field(): void {
+		$selected_post_types = Config::get_instance()->get( 'post_types' );
+		$all_post_types      = get_post_types( [ 'public' => true ], 'objects' );
+
+		foreach ( $all_post_types as $post_type ) {
+			$checked = in_array( $post_type->name, $selected_post_types, true ) ? 'checked' : '';
+
+			echo '<label><input type="checkbox" name="' . esc_attr( Config::get_option_name( 'post_types' ) ) . '[]" '
+				. ' value="' . esc_attr( $post_type->name ) . '" '
+				. esc_attr( $checked )
+				. ' />' . esc_html( $post_type->label ) . '</label><br>';
+		}
+
+		echo '<p class="description">';
+		esc_html_e( 'Post types that will be tracked.', 'wp-last-viewed' );
 		echo '</p>';
 	}
 

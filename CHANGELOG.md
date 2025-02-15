@@ -12,6 +12,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Added editor block.
 - Tracking side field in admin panel.
 - Client-side tracking and rendering.
+- Tracked post types field in admin panel.
 
 ### Changed
 

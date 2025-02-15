@@ -58,4 +58,31 @@ class SettingsTest extends \WP_UnitTestCase
 			$this->settings->sanitize_tracking_side_setting('')
 		);
 	}
+
+	public function test_sanitize_post_types_setting_returns_valid_post_types()
+	{
+		$valid_post_types = ['post', 'page'];
+		$this->assertEqualSets(
+			$valid_post_types,
+			$this->settings->sanitize_post_types_setting($valid_post_types)
+		);
+	}
+
+	public function test_sanitize_post_types_setting_returns_default_for_empty_input()
+	{
+		$this->assertEqualSets(
+			['post'],
+			$this->settings->sanitize_post_types_setting([])
+		);
+	}
+
+	public function test_sanitize_post_types_setting_filters_invalid_post_types()
+	{
+		$valid_post_types = ['post', 'page'];
+		$input = ['post', 'invalid_type', 'page'];
+		$this->assertEqualSets(
+			$valid_post_types,
+			$this->settings->sanitize_post_types_setting($input)
+		);
+	}
 }
