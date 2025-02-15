@@ -11,14 +11,14 @@ Show last viewed WordPress posts.
 ## Set-up
 
 - Run `nvm use`
-- Run `yarn dev`
+- Run `yarn dev` (When running on a macOS Silicon, run `DOCKER_DEFAULT_PLATFORM=linux/amd64 yarn dev` instead. Not all docker WP containers have been optimized for arm64 yet.)
 
 ## To-do
 
-- [ ] Add client-sided tracking so this plugin may also work with proxy caching + add setting in admin to choose between serverside and clientside;
-- [ ] Add option to choose which (custom) post types should be tracked + provide tracking for selected post types;
-- [ ] Make a Gutenberg block which shows an overview of "last viewed" (see View class);
-- [ ] Add a setting to shortcode & Gutenberg block (if possible) to set the amount of posts shown + implement in View class.
+- [x] Add client-sided tracking so this plugin may also work with proxy caching + add setting in admin to choose between serverside and clientside;
+- [x] Add option to choose which (custom) post types should be tracked + provide tracking for selected post types;
+- [x] Make a Gutenberg block which shows an overview of "last viewed" (see View class);
+- [x] Add a setting to shortcode & Gutenberg block (if possible) to set the amount of posts shown + implement in View class.
 
 ## Development guidelines
 
