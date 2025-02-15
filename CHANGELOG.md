@@ -11,11 +11,13 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Added editor block.
 - Tracking side field in admin panel.
+- Client-side tracking and rendering.
 
 ### Changed
 
 - Updated plugin to 1815 Coding Standards.
 - Improved sanitizing of settings field input.
 - Using WP standard methods instead for submit button.
+- Prevent server-side tracking when client-side tracking is enabled.
 
 [unreleased]: https://github.com/achttienvijftien/wp-republish

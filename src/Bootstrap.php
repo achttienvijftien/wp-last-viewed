@@ -63,4 +63,15 @@ class Bootstrap {
 	public function init_admin(): void {
 		new Admin();
 	}
+
+	/**
+	 * Returns the public URL of a plugin asset.
+	 *
+	 * @param string $asset_file path of asset file within asset folder.
+	 */
+	public function get_plugin_assets_url( $asset_file ): string {
+		$asset_file = 'assets/' . $asset_file;
+
+		return plugins_url( $asset_file, __DIR__ );
+	}
 }

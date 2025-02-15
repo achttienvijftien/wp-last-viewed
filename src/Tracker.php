@@ -7,6 +7,7 @@
 
 namespace AchttienVijftien\Plugin\LastViewed;
 
+use AchttienVijftien\Plugin\LastViewed\Admin\Settings;
 use AchttienVijftien\Plugin\LastViewed\Config;
 
 /**
@@ -26,6 +27,7 @@ class Tracker {
 	 */
 	public function __construct() {
 		add_action( 'wp', [ $this, 'track' ] );
+		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
 	}
 
 	/**
@@ -34,6 +36,14 @@ class Tracker {
 	public function track(): void {
 		// bail early if not on post single.
 		if ( ! is_singular( [ 'post' ] ) ) {
+			return;
+		}
+
+		// get the current tracking side setting.
+		$tracking_side = Config::get_instance()->get( 'tracking_side' );
+
+		// no server-side tracking required for client-side.
+		if ( Settings::SETTING_TRACKING_SIDE_CLIENT === $tracking_side ) {
 			return;
 		}
 
@@ -53,12 +63,6 @@ class Tracker {
 
 			// add to start of array.
 			array_unshift( $posts, get_the_ID() );
-
-			// get default amount from config.
-			$amount = Config::get_instance()->get( 'amount' ) ? Config::get_instance()->get( 'amount' ) : 20;
-
-			// array max size of 20 posts.
-			$posts = array_slice( $posts, 0, $amount );
 		} else {
 			// else set to post id.
 			$posts[] = get_the_ID();
@@ -71,6 +75,43 @@ class Tracker {
 			time() + MONTH_IN_SECONDS,
 			COOKIEPATH,
 			COOKIE_DOMAIN
+		);
+	}
+
+	/**
+	 * Enqueue scripts handler.
+	 */
+	public function enqueue_scripts(): void {
+		// get the current tracking side setting.
+		$tracking_side = Config::get_instance()->get( 'tracking_side' );
+
+		// no script needed for server-side tracking.
+		if ( Settings::SETTING_TRACKING_SIDE_SERVER === $tracking_side ) {
+			return;
+		}
+
+		// get the default amount.
+		$amount = Config::get_instance()->get( 'amount' );
+
+		// get path of the js file.
+		$js_file = Bootstrap::get_instance()->get_plugin_assets_url( 'js/wp-last-viewed.js' );
+
+		// enqueue the js file.
+		wp_enqueue_script( 'wp-last-viewed-tracking', $js_file, [], '1.0', true );
+
+		// add localization and config.
+		wp_localize_script(
+			'wp-last-viewed-tracking',
+			'wpLastViewedConfig',
+			[
+				'defaultAmount'           => $amount,
+				'cookieName'              => self::TRACKING_COOKIE,
+				'cookiePath'              => COOKIEPATH,
+				'cookieExpirationSeconds' => MONTH_IN_SECONDS,
+				'i18n'                    => [
+					'noPostsFound' => esc_html__( 'No posts found.', 'wp-last-viewed' ),
+				],
+			]
 		);
 	}
 }
