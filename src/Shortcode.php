@@ -38,6 +38,5 @@ class Shortcode {
 	public function output_posts(): string {
 
 		return View::get_instance()->output_posts();
-
 	}
 }

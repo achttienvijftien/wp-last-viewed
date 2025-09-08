@@ -7,6 +7,7 @@
 
 namespace AchttienVijftien\Plugin\LastViewed;
 
+use AchttienVijftien\Plugin\LastViewed\Admin\Settings;
 use AchttienVijftien\Plugin\LastViewed\Config;
 use AchttienVijftien\Plugin\LastViewed\Tracker;
 
@@ -15,7 +16,6 @@ use AchttienVijftien\Plugin\LastViewed\Tracker;
  *
  * @package AchttienVijftien\Plugin\LastViewed
  */
-
 class View {
 
 	/**
@@ -30,7 +30,7 @@ class View {
 	 *
 	 * @var array
 	 */
-	private array $options = [];
+	private $options = [];
 
 	/**
 	 * Gets (singleton) instance.
@@ -50,18 +50,18 @@ class View {
 	 */
 	public function output_posts(): string {
 
-		// bail early if no or empty cookie
+		// bail early if no or empty cookie.
 		if ( empty( $_COOKIE[ Tracker::TRACKING_COOKIE ] ) ) {
 			return '';
 		}
 
-		// get post ids
+		// get post ids.
 		$post_ids = explode( ',', $_COOKIE[ Tracker::TRACKING_COOKIE ] );
 
-		// get posts
+		// get posts based on track post types settings.
 		$posts = get_posts(
 			[
-				'post_type'      => 'post',
+				'post_type'      => Settings::get_track_post_types_settings(),
 				'posts_per_page' => -1,
 				'post__in'       => $post_ids,
 				'orderby'        => 'post__in',
@@ -75,10 +75,14 @@ class View {
 		ob_start();
 
 		?>
-		<h3><?php echo __( 'Last viewed', 'wp-last-viewed' ); ?></h3>
+		<h3><?php esc_html_e( 'Last viewed', 'wp-last-viewed' ); ?></h3>
 		<ul class="wp-last-viewed-list">
 			<?php foreach ( $posts as $post ) { ?>
-				<li class="wp-last-viewed-list__item"><a href="<?php echo get_the_permalink( $post ); ?>"><?php echo get_the_title( $post ); ?></a></li>
+				<li class="wp-last-viewed-list__item">
+					<a href="<?php echo esc_html( get_the_permalink( $post ) ); ?>">
+						<?php echo esc_html( get_the_title( $post ) ); ?>
+					</a>
+				</li>
 			<?php } ?>
 		</ul>
 		<?php
@@ -87,6 +91,5 @@ class View {
 		ob_end_clean();
 
 		return $html;
-
 	}
 }

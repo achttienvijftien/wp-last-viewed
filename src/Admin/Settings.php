@@ -67,7 +67,7 @@ class Settings {
 				do_settings_sections( self::GENERAL_PAGE_SLUG );
 				?>
 				<input name="submit" class="button button-primary" type="submit"
-					   value="<?php esc_attr_e( 'Save' ); ?>"/>
+						value="<?php esc_attr_e( 'Save' ); ?>"/>
 			</form>
 		</div>
 		<?php
@@ -88,6 +88,8 @@ class Settings {
 		);
 
 		$this->add_amount_setting();
+		$this->add_client_side_tracking_field();
+		$this->add_track_post_types();
 	}
 
 	/**
@@ -111,7 +113,7 @@ class Settings {
 			Config::get_option_name( 'amount' ),
 			[
 				'type'              => 'integer',
-				'sanitize_callback' => 'is_int',
+				'sanitize_callback' => 'intval',
 				'default'           => 5,
 			]
 		);
@@ -122,6 +124,58 @@ class Settings {
 			[
 				$this,
 				'amount_setting_field',
+			],
+			self::GENERAL_PAGE_SLUG,
+			self::SETTINGS_PREFIX . 'general'
+		);
+	}
+
+	/**
+	 * Default client_side_tracking setting.
+	 */
+	public function add_client_side_tracking_field(): void {
+		$field = 'client_side_tracking';
+		register_setting(
+			self::SETTINGS_PREFIX . 'general',
+			Config::get_option_name( $field ),
+			[
+				'type'              => 'integer',
+				'sanitize_callback' => 'intval',
+				'default'           => 0,
+			]
+		);
+
+		add_settings_field(
+			self::SETTINGS_PREFIX . $field,
+			__( 'Client side tracking', 'wp-last-viewed' ),
+			[
+				$this,
+				'client_side_tracking_setting_field',
+			],
+			self::GENERAL_PAGE_SLUG,
+			self::SETTINGS_PREFIX . 'general'
+		);
+	}
+
+	/**
+	 * Add track_post_types setting
+	 */
+	public function add_track_post_types(): void {
+		register_setting(
+			self::SETTINGS_PREFIX . 'general',
+			Config::get_option_name( 'track_post_types' ),
+			[
+				'type'              => 'array',
+				'sanitize_callback' => [ $this, 'sanitize_post_types' ],
+				'default'           => [],
+			]
+		);
+		add_settings_field(
+			self::SETTINGS_PREFIX . 'track_post_types',
+			__( 'Track post types', 'wp-last-viewed' ),
+			[
+				$this,
+				'track_post_types_setting_field',
 			],
 			self::GENERAL_PAGE_SLUG,
 			self::SETTINGS_PREFIX . 'general'
@@ -141,6 +195,83 @@ class Settings {
 		echo '<p class="description">';
 		esc_html_e( 'Default amount of last viewed posts to display.', 'wp-last-viewed' );
 		echo '</p>';
+	}
+
+	/**
+	 * Form field setting to switch from server side, to client side tracking
+	 */
+	public function client_side_tracking_setting_field(): void {
+		$field                = 'client_side_tracking';
+		$client_side_tracking = self::get_client_side_tracking_setting();
+
+		echo '<input id="' . esc_attr( self::SETTINGS_PREFIX . $field ) . '"
+		name="' . esc_attr( Config::get_option_name( $field ) ) . '"
+		type="checkbox" value="1" ' . ( $client_side_tracking ? 'checked="checked"' : '' ) . ' />';
+
+		echo '<label for="' . esc_attr( self::SETTINGS_PREFIX . $field ) . '" class="description">';
+		esc_html_e( 'Use client side tracking instead of server side tracking.', 'wp-last-viewed' );
+		echo '</label>';
+		echo '<p class="description">';
+		esc_html_e( 'Tracking of cached pages.', 'wp-last-viewed' );
+		echo '</p>';
+	}
+
+
+	/**
+	 * Sanitize post types from input
+	 *
+	 * @param array $input Form multi-select input.
+	 * @return array
+	 */
+	public function sanitize_post_types( array $input ): array {
+		$allowed = get_post_types();
+		return array_intersect( $allowed, $input );
+	}
+
+	/**
+	 * Form field for selecting multiple post types
+	 */
+	public function track_post_types_setting_field(): void {
+		$field = 'track_post_types';
+
+		$selected_types = self::get_track_post_types_settings();
+		$name           = Config::get_option_name( $field );
+
+		$post_types = get_post_types( [ 'public' => true ] );
+
+		echo '<select multiple name="' . esc_attr( $name ) . '[]" style="min-width:200px;">';
+
+		foreach ( $post_types as $id => $post_type ) {
+			$selected = in_array( $id, $selected_types, true ) ? 'selected="selected"' : '';
+			echo '<option value="' . esc_attr( $id ) . '" ' . esc_attr( $selected ) . '">';
+			echo esc_attr( $post_type );
+			echo '</option>';
+		}
+
+		echo '</select>';
+	}
+
+
+	/**
+	 * Get Client Side Tracking setting
+	 */
+	public static function get_client_side_tracking_setting(): bool {
+		$field = 'client_side_tracking';
+		return Config::get_instance()->get( $field ) ? true : false;
+	}
+
+	/**
+	 * Get track_post_types setting
+	 *
+	 * @return array
+	 */
+	public static function get_track_post_types_settings(): array {
+		$field   = 'track_post_types';
+		$setting = Config::get_instance()->get( $field );
+		if ( ! $setting ) {
+			return [ 'post' ];
+		}
+		return $setting;
 	}
 
 	/**

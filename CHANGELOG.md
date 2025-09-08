@@ -9,6 +9,9 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Added view only specific tracked post types
+- Added setting to specify which post types to track
+- Added functionality and setting for client side tracking
 - Added editor block.
 
 [unreleased]: https://github.com/achttienvijftien/wp-republish

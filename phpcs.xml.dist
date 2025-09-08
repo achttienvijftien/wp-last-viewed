@@ -74,6 +74,8 @@
     <!-- Use short arrays -->
     <rule ref="Generic.Arrays">
         <exclude name="Generic.Arrays.DisallowShortArraySyntax.Found" />
+        <!-- https://github.com/squizlabs/PHP_CodeSniffer/issues/3709 -->
+        <exclude name="Universal.Arrays.DisallowShortArraySyntax"/>
     </rule>
 
     <!-- Allow precision alignment -->

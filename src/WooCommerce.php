@@ -29,8 +29,6 @@ class WooCommerce {
 	 */
 	public function output_posts(): void {
 
-		echo View::get_instance()->output_posts();
-
+		echo esc_html( View::get_instance()->output_posts() );
 	}
-
 }
