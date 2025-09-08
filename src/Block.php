@@ -36,9 +36,11 @@ class Block {
 	/**
 	 * Renders the block.
 	 *
+	 * @param array $attr Block attributes.
 	 * @return string
 	 */
-	public function render_callback() {
-		return View::get_instance()->output_posts();
+	public function render_callback( array $attr = [] ) {
+		$posts_per_page = isset( $attr['maximum'] ) ? (int) $attr['maximum'] : -1;
+		return View::get_instance()->output_posts( $posts_per_page );
 	}
 }
