@@ -34,9 +34,14 @@ class Shortcode {
 
 	/**
 	 * Output posts found in the tracking cookie
+	 *
+	 * @param array $attr Shortcode attributes.
+	 * @return string
 	 */
-	public function output_posts(): string {
+	public function output_posts( array $attr = [] ): string {
 
-		return View::get_instance()->output_posts();
+		$posts_per_page = isset( $attr['maximum'] ) ? (int) $attr['maximum'] : -1;
+
+		return View::get_instance()->output_posts( $posts_per_page );
 	}
 }
