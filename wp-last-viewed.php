@@ -3,7 +3,7 @@
  * Plugin Name:     1815 - WordPress Last Viewed
  * Plugin URI:      https://1815.nl
  * Description:     Show last viewed WordPress posts
- * Version:         0.1.1
+ * Version:         0.1.2
  * Author:          1815 <it@1815.nl>
  * Author URI:      https://1815.nl
  * Text Domain:     wp-last-viewed
