@@ -26,6 +26,16 @@ class Settings {
 	 */
 	private const GENERAL_PAGE_SLUG = 'wp-last-viewed-general';
 
+    /**
+     * Default amount of posts to display.
+     */
+    private const DEFAULT_AMOUNT = 5;
+
+    /**
+     * Default tracking type.
+     */
+    private const DEFAULT_TRACKING_TYPE = 'server';
+
 	/**
 	 * Settings constructor.
 	 */
@@ -88,6 +98,7 @@ class Settings {
 		);
 
 		$this->add_amount_setting();
+        $this->add_tracking_type_setting();
 	}
 
 	/**
@@ -111,8 +122,8 @@ class Settings {
 			Config::get_option_name( 'amount' ),
 			[
 				'type'              => 'integer',
-				'sanitize_callback' => 'is_int',
-				'default'           => 5,
+                'sanitize_callback' => [ $this, 'sanitize_amount' ],
+				'default'           => self::DEFAULT_AMOUNT,
 			]
 		);
 
@@ -128,41 +139,132 @@ class Settings {
 		);
 	}
 
-	/**
-	 * Form field of default amount setting.
-	 */
-	public function amount_setting_field(): void {
-		$amount = Config::get_instance()->get( 'amount' );
+    /**
+     * @param mixed $value
+     * @return int
+     */
+    public function sanitize_amount( mixed $value ): int {
 
-		echo '<input id="' . esc_attr( self::SETTINGS_PREFIX . 'amount' ) . '" class="small-text"
+        if ( ! is_numeric( $value ) ) {
+            return self::DEFAULT_AMOUNT;
+        }
+
+        $value = (int) $value;
+
+        if ( $value >= 1 && $value <= 20 ) {
+            return $value;
+        }
+
+        return self::DEFAULT_AMOUNT;
+    }
+
+    /**
+     * Form field of default amount setting.
+     */
+    public function amount_setting_field(): void {
+        $amount = Config::get_instance()->get( 'amount' );
+
+        echo '<input id="' . esc_attr( self::SETTINGS_PREFIX . 'amount' ) . '" class="small-text"
 		name="' . esc_attr( Config::get_option_name( 'amount' ) ) . '"
 		type="number" min="1" max="20" value="' . esc_attr( $amount ) . '" />';
 
-		echo '<p class="description">';
-		esc_html_e( 'Default amount of last viewed posts to display.', 'wp-last-viewed' );
-		echo '</p>';
-	}
+        echo '<p class="description">';
+        esc_html_e( 'Default amount of last viewed posts to display.', 'wp-last-viewed' );
+        echo '</p>';
+    }
 
-	/**
-	 * Adds link to general settings page on plugin list page.
-	 *
-	 * @param array $links Links of this plugin to show on plugin list page.
-	 *
-	 * @return array
-	 */
-	public function plugin_settings_link( array $links ): array {
-		// Get link to general settings page.
-		$url = esc_url(
-			add_query_arg(
-				'page',
-				self::GENERAL_PAGE_SLUG,
-				get_admin_url() . 'admin.php'
-			)
-		);
+    /**
+     * Tracking type setting.
+     */
+    public function add_tracking_type_setting(): void {
+        register_setting(
+                self::SETTINGS_PREFIX . 'general',
+                Config::get_option_name( 'tracking-type' ),
+                [
+                        'sanitize_callback' => [ $this, 'sanitize_tracking_type' ],
+                        'default'           => self::DEFAULT_TRACKING_TYPE,
+                ]
+        );
 
-		// Create the link.
-		$links[] = '<a href="' . $url . '">' . esc_html__( 'Settings' ) . '</a>';
+        add_settings_field(
+                self::SETTINGS_PREFIX . 'tracking-type',
+                __( 'Tracking type', 'wp-last-viewed' ),
+                [
+                        $this,
+                        'tracking_type_setting_field',
+                ],
+                self::GENERAL_PAGE_SLUG,
+                self::SETTINGS_PREFIX . 'general'
+        );
+    }
 
-		return $links;
-	}
+    /**
+     * @param mixed $value
+     * @return string
+     */
+    public function sanitize_tracking_type( mixed $value ): string {
+
+        $valid_values = [ 'server', 'client' ];
+        $valid_values = array_unique( array_merge( $valid_values, [ self::DEFAULT_TRACKING_TYPE ] ) );
+
+        $value = (string) $value;
+
+        if ( in_array( $value, $valid_values, true ) ) {
+            return $value;
+        }
+
+        return self::DEFAULT_TRACKING_TYPE;
+    }
+
+    /**
+     * Form field of tracking type setting.
+     */
+    public function tracking_type_setting_field(): void {
+        $tracking_type = Config::get_instance()->get( 'tracking-type' );
+
+        // Define options
+        $options = [
+                'server' => __( 'Server-side', 'wp-last-viewed' ),
+                'client' => __( 'Client-side', 'wp-last-viewed' ),
+        ];
+
+        $option_name = esc_attr( Config::get_option_name( 'tracking-type' ) );
+
+        foreach ( $options as $value => $label ) {
+            printf(
+                    '<label><input type="radio" name="%1$s" value="%2$s" %3$s /> %4$s</label><br>',
+                    $option_name,
+                    esc_attr( $value ),
+                    checked( $tracking_type, $value, false ),
+                    esc_html( $label )
+            );
+        }
+
+        echo '<p class="description">';
+        esc_html_e( "Choose type of tracking. Default is 'Server-side'. Select 'Client-side' if the site uses caching.", 'wp-last-viewed' );
+        echo '</p>';
+    }
+
+    /**
+     * Adds link to general settings page on plugin list page.
+     *
+     * @param array $links Links of this plugin to show on plugin list page.
+     *
+     * @return array
+     */
+    public function plugin_settings_link( array $links ): array {
+        // Get link to general settings page.
+        $url = esc_url(
+                add_query_arg(
+                        'page',
+                        self::GENERAL_PAGE_SLUG,
+                        get_admin_url() . 'admin.php'
+                )
+        );
+
+        // Create the link.
+        $links[] = '<a href="' . $url . '">' . esc_html__( 'Settings' ) . '</a>';
+
+        return $links;
+    }
 }
