@@ -30,7 +30,7 @@ document.addEventListener( 'DOMContentLoaded', function () {
 	// Limit amount
 	posts = posts.slice( 0, amount );
 
-	var newCookie = posts.join( ',' );
+	var newCookie = encodeURIComponent( posts.join( ',' ) );
 
 	document.cookie = cookieName + '=' + newCookie + '; path=/; max-age=' + cookieAge;
 } );
