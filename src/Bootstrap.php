@@ -47,13 +47,15 @@ class Bootstrap {
 	 * Initialize plugin.
 	 */
 	public function init(): void {
-		new Tracker();
-		new Shortcode();
-		new WooCommerce();
 		new Block();
 
 		if ( is_admin() ) {
 			$this->init_admin();
+		}
+		else {
+			new Tracker();
+			new Shortcode();
+			new WooCommerce();
 		}
 	}
 
