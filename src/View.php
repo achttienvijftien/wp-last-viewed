@@ -48,21 +48,30 @@ class View {
 	/**
 	 * Output posts found in the tracking cookie
 	 */
-	public function output_posts(): string {
+	public function output_posts( ?int $limit = null ): string {
 
 		// bail early if no or empty cookie
 		if ( empty( $_COOKIE[ Tracker::TRACKING_COOKIE ] ) ) {
 			return '';
 		}
+		
+		// display limit: instance value -> global setting
+		$limit = $limit ?? Config::get_instance()->get( 'amount' );
+		
+		// safety
+		$limit = min( max( (int) $limit, 1 ), 20 );
 
 		// get post ids
 		$post_ids = explode( ',', $_COOKIE[ Tracker::TRACKING_COOKIE ] );
+		
+		// Limit IDs before querying.
+		$post_ids = array_slice( $post_ids, 0, $limit );
 
 		// get posts
 		$posts = get_posts(
 			[
 				'post_type'      => 'post',
-				'posts_per_page' => -1,
+				'posts_per_page' => $limit,
 				'post__in'       => $post_ids,
 				'orderby'        => 'post__in',
 			]
