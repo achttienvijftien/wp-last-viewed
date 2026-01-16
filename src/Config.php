@@ -1,6 +1,6 @@
 <?php
 /**
- * This file contains the logic for Bootstrap.
+ * This file contains the logic for Config.
  *
  * @package AchttienVijftien\Plugin\LastViewed
  */
@@ -47,6 +47,21 @@ class Config {
 	}
 
 	/**
+	 * Get default value for a config key.
+	 *
+	 * @param string $key Key of option.
+	 *
+	 * @return mixed
+	 */
+	private function get_default( string $key ) {
+		$defaults = [
+			'amount' => 5,
+		];
+	
+		return $defaults[ $key ] ?? null;
+	}
+
+	/**
 	 * Set config value.
 	 *
 	 * @param string $key Key of option.
@@ -75,9 +90,12 @@ class Config {
 	 */
 	public function get( string $key ) {
 		if ( ! isset( $this->options[ $key ] ) ) {
-			$this->options[ $key ] = get_option( self::get_option_name( $key ) );
+			$this->options[ $key ] = get_option(
+				self::get_option_name( $key ),
+				$this->get_default( $key )
+			);
 		}
-
+	
 		return $this->options[ $key ];
 	}
 
