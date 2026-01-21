@@ -111,7 +111,7 @@ class Settings {
 			Config::get_option_name( 'amount' ),
 			[
 				'type'              => 'integer',
-				'sanitize_callback' => 'is_int',
+				'sanitize_callback' => 'absint',
 				'default'           => 5,
 			]
 		);

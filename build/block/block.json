@@ -5,7 +5,7 @@
   "version": "1.0.0",
   "title": "Last Viewed",
   "category": "widgets",
-  "icon": "smiley",
+  "icon": "welcome-view-site",
   "description": "Show last viewed WordPress posts",
   "supports": {
     "html": false
@@ -13,5 +13,11 @@
   "textdomain": "wp-last-viewed",
   "editorScript": "file:./index.js",
   "editorStyle": "file:./index.css",
-  "style": "file:./style-index.css"
+  "style": "file:./style-index.css",
+  "attributes": {
+    "amount": {
+      "type": "number",
+      "default": 5
+    }
+  }
 }

@@ -35,9 +35,18 @@ class Shortcode {
 	/**
 	 * Output posts found in the tracking cookie
 	 */
-	public function output_posts(): string {
+	public function output_posts( array $atts = [] ): string {
 
-		return View::get_instance()->output_posts();
+		$atts = shortcode_atts(
+			[
+				'amount' => null,
+			],
+			$atts
+		);
+
+		return View::get_instance()->output_posts(
+			$atts['amount'] !== null ? (int) $atts['amount'] : null
+		);
 
 	}
 }

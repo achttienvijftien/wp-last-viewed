@@ -20,6 +20,12 @@ class Tracker {
 	 * Name of tracking cookie.
 	 */
 	public const TRACKING_COOKIE = '1815_last-viewed';
+	
+	
+	/**
+	 * Maximum amount of tracked posts.
+	 */
+	private const MAX_TRACKED_POSTS = 20;
 
 	/**
 	 * Tracker constructor.
@@ -55,7 +61,7 @@ class Tracker {
 			array_unshift( $posts, get_the_ID() );
 
 			// array max size of 20 posts.
-			$posts = array_slice( $posts, 0, Config::get_instance()->get( 'amount' ) ? Config::get_instance()->get( 'amount' ) : 20 );
+			$posts = array_slice( $posts, 0, self::MAX_TRACKED_POSTS );
 		} else {
 			// else set to post id.
 			$posts[] = get_the_ID();
