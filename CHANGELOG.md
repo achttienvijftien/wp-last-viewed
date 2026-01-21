@@ -10,6 +10,6 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - Added editor block.
-- Added shortcode attribute to set amount of posts.
+- Added amount of posts attribute to shortcode and block.
 
 [unreleased]: https://github.com/achttienvijftien/wp-republish

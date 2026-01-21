@@ -89,7 +89,7 @@ class Config {
 	 * @return mixed
 	 */
 	public function get( string $key ) {
-		if ( ! isset( $this->options[ $key ] ) ) {
+		if ( ! array_key_exists( $key, $this->options ) ) {
 			$this->options[ $key ] = get_option(
 				self::get_option_name( $key ),
 				$this->get_default( $key )

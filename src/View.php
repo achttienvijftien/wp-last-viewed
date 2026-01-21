@@ -56,7 +56,9 @@ class View {
 		}
 		
 		// display limit: instance value -> global setting
-		$limit = $limit ?? Config::get_instance()->get( 'amount' );
+		if ( empty( $limit ) ) {
+  		$limit = Config::get_instance()->get( 'amount' );
+  	}
 		
 		// safety
 		$limit = min( max( (int) $limit, 1 ), 20 );
