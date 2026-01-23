@@ -88,6 +88,7 @@ class Settings {
 		);
 
 		$this->add_amount_setting();
+		$this->add_tracked_post_types_setting();
 	}
 
 	/**
@@ -142,6 +143,88 @@ class Settings {
 		esc_html_e( 'Default amount of last viewed posts to display.', 'wp-last-viewed' );
 		echo '</p>';
 	}
+
+  /**
+   * Tracked post types setting.
+   */
+  public function add_tracked_post_types_setting(): void {
+  	register_setting(
+  		self::SETTINGS_PREFIX . 'general',
+  		Config::get_option_name( 'tracked_post_types' ),
+  		[
+  			'type'              => 'array',
+  			'sanitize_callback' => [ $this, 'sanitize_post_types' ],
+  			'default'           => [ 'post', 'page' ],
+  		]
+  	);
+  
+  	add_settings_field(
+  		self::SETTINGS_PREFIX . 'tracked_post_types',
+  		__( 'Tracked post types', 'wp-last-viewed' ),
+  		[
+  			$this,
+  			'tracked_post_types_setting_field',
+  		],
+  		self::GENERAL_PAGE_SLUG,
+  		self::SETTINGS_PREFIX . 'general'
+  	);
+  }
+
+  /**
+   * Sanitize tracked post types.
+   *
+   * @param mixed $value Raw input.
+   *
+   * @return array
+   */
+  public function sanitize_post_types( $value ): array {
+  	$value = (array) $value;
+  
+  	$available = array_keys(
+  		get_post_types(
+  			[
+  				'public' => true,
+  			]
+  		)
+  	);
+  
+  	return array_values( array_intersect( $available, $value ) );
+  }
+
+  /**
+   * Form field for tracked post types.
+   */
+  public function tracked_post_types_setting_field(): void {
+  	$selected   = (array) Config::get_instance()->get( 'tracked_post_types' );
+  	$post_types = get_post_types(
+  		[
+  			'public' => true,
+  		],
+  		'objects'
+  	);
+  
+  	foreach ( $post_types as $post_type ) {
+  		$id = self::SETTINGS_PREFIX . 'tracked_post_type_' . $post_type->name;
+  
+  		echo '<label for="' . esc_attr( $id ) . '" style="display:block;">';
+  		echo '<input type="checkbox"
+  			id="' . esc_attr( $id ) . '"
+  			name="' . esc_attr( Config::get_option_name( 'tracked_post_types' ) ) . '[]"
+  			value="' . esc_attr( $post_type->name ) . '" ' .
+  			checked( in_array( $post_type->name, $selected, true ), true, false ) .
+  		' /> ';
+  
+  		echo esc_html( $post_type->labels->singular_name );
+  		echo '</label>';
+  	}
+  
+  	echo '<p class="description">';
+  	esc_html_e(
+  		'Select which post types should be tracked and displayed as last viewed.',
+  		'wp-last-viewed'
+  	);
+  	echo '</p>';
+  }
 
 	/**
 	 * Adds link to general settings page on plugin list page.
