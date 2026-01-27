@@ -32,35 +32,64 @@ class Tracker {
 	 * Page view track handler.
 	 */
 	public function track(): void {
-		// bail early if not on post single.
-		if ( ! is_singular( [ 'post' ] ) ) {
+		// bail early if not tracking.
+		if ( ! $this->should_track() ) {
 			return;
 		}
 
-		$posts = [];
+		$posts = $this->read_posts_from_cookie();
+		$posts = $this->apply_tracking_rules( $posts, get_the_ID() );
+		$this->write_posts_to_cookie( $posts );
+	}
+
+	/**
+	 *  Whether the current request should be tracked.
+	 */
+	private function should_track(): bool {
+		return is_singular( [ 'post' ] );
+	}
+
+	/**
+	 * Reads tracked post IDs from the tracking cookie.
+	 */
+	private function read_posts_from_cookie(): array {
 		// check cookie.
-		if ( ! empty( $_COOKIE[ self::TRACKING_COOKIE ] ) ) {
-			// if cookie, get value.
-			$posts = explode( ',', $_COOKIE[ self::TRACKING_COOKIE ] );
-
-			// check if post already in array.
-			$existing_post_key = array_search( (string) get_the_ID(), $posts, true );
-
-			if ( is_int( $existing_post_key ) ) {
-				// remove current position, so it is moved to the start.
-				unset( $posts[ $existing_post_key ] );
-			}
-
-			// add to start of array.
-			array_unshift( $posts, get_the_ID() );
-
-			// array max size of 20 posts.
-			$posts = array_slice( $posts, 0, Config::get_instance()->get( 'amount' ) ? Config::get_instance()->get( 'amount' ) : 20 );
-		} else {
-			// else set to post id.
-			$posts[] = get_the_ID();
+		if ( empty( $_COOKIE[ self::TRACKING_COOKIE ] ) ) {
+			return [];
 		}
 
+		// if cookie, get value.
+		return explode( ',', $_COOKIE[ self::TRACKING_COOKIE ] );
+	}
+
+	/**
+	 * Applies tracking rules:
+	 * - moves current post to the front
+	 * - ensures uniqueness
+	 * - limits list size
+	 */
+	private function apply_tracking_rules( array $posts, int $post_id ): array {
+		// check if post already in array.
+		$existing_post_key = array_search( (string) $post_id, $posts, true );
+
+		if ( $existing_post_key !== false ) {
+		  // remove current position, so it is moved to the start.
+			unset( $posts[ $existing_post_key ] );
+		}
+
+		// add to start of array.
+		array_unshift( $posts, $post_id );
+
+		$max = Config::get_instance()->get( 'amount' ) ?: 20;
+
+		// array max size posts.
+		return array_slice( $posts, 0, $max );
+	}
+
+	/**
+	 * Writes tracked post IDs to the tracking cookie.
+	 */
+	private function write_posts_to_cookie( array $posts ): void {
 		// (re)set tracking cookie.
 		setcookie(
 			self::TRACKING_COOKIE,
@@ -70,4 +99,7 @@ class Tracker {
 			COOKIE_DOMAIN
 		);
 	}
+
+
+
 }
