@@ -58,10 +58,16 @@ class View {
 		// get post ids
 		$post_ids = explode( ',', $_COOKIE[ Tracker::TRACKING_COOKIE ] );
 
+		$post_types = Config::get_instance()->get( 'tracked_post_types' );
+
+		if ( empty( $post_types ) ) {
+			return '';
+		}
+
 		// get posts
 		$posts = get_posts(
 			[
-				'post_type'      => 'post',
+				'post_type'      => $post_types,
 				'posts_per_page' => -1,
 				'post__in'       => $post_ids,
 				'orderby'        => 'post__in',
