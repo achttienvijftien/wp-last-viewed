@@ -47,6 +47,15 @@ class Config {
 	}
 
 	/**
+	 * Reset cached options.
+	 *
+	 * Intended for testing purposes only.
+	 */
+	public function reset(): void {
+		$this->options = [];
+	}
+
+	/**
 	 * Get default value for a config key.
 	 *
 	 * @param string $key Key of option.

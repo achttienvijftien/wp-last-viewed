@@ -42,4 +42,19 @@ class ConfigTest extends \WP_UnitTestCase {
     $this->assertEquals(['post', 'page', 'legoset'], $retrieved);
   }
 
+	public function test_empty_tracked_post_types_disables_tracking(): void {
+		update_option(
+			Config::get_option_name( 'tracked_post_types' ),
+			[]
+		);
+
+		Config::get_instance()->reset();
+
+		$this->assertSame(
+			[],
+			Config::get_instance()->get( 'tracked_post_types' )
+		);
+	}
+
+
 }

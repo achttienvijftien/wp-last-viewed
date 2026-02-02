@@ -46,7 +46,9 @@ class Tracker {
 	 *  Whether the current request should be tracked.
 	 */
 	private function should_track(): bool {
-		return is_singular( [ 'post' ] );
+		$post_types = Config::get_instance()->get( 'tracked_post_types' );
+
+		return is_singular( $post_types );
 	}
 
 	/**
